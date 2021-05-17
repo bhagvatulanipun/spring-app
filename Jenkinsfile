@@ -244,7 +244,7 @@ pipeline {
 
                     // Build and push docker image
                     IMAGENAME = "${env.ECR_URL}/${env.APPLICATION}"
-                    docker.withRegistry("https://${env.ICM_ECR_REPO_URL}", "${env.ECR_LOGIN}") {
+                    docker.withRegistry("https://${env.ECR_URL}", "${env.ECR_LOGIN}") {
                         image = docker.build("${IMAGENAME}", " .")
                         docker.image("${IMAGENAME}").push("${tag}")
                     }
