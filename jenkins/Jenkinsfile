@@ -181,23 +181,6 @@ pipeline {
     // Pipeline Stages
     stages {
 
-        // Kill other jobs
-        stage('Kill other jobs') {
-            steps {
-                script {
-                    echo "Executing Stage 1: Kill other jobs having same parameters"
-
-                    /* Logic starts here */
-
-                    killAllJobsWithSameParams()
-
-                    /* Logic ends here */
-
-                    echo "Completed Stage 1: Kill other jobs"
-                }
-            }
-        }
-
         // Clean Jenkins workspace
         stage('Clean workspace') {
             steps {
