@@ -181,7 +181,7 @@ pipeline {
 
         // Application specific parameters
         APPLICATION = "spring-app"
-        ECR_URL = "365151504774.dkr.ecr.us-east-1.amazonaws.com/"
+        ECR_URL = "365151504774.dkr.ecr.us-east-1.amazonaws.com"
         ENVIRONMENT = "dev"
         BRANCH = "${params.BRANCH}"
         VERSION = "${env.BRANCH}-${new SimpleDateFormat("yyyy-MM-dd-HHmmss").format(new Date())}-${env.BUILD_NUMBER}"
