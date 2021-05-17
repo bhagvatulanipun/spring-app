@@ -57,10 +57,10 @@ def  ECS_IMAGE_TO_DEPLOY = ""
 //             continue;
 //         }
 
-//         log.info("OLD_BRANCH ${build.environment["BRANCH"]} ::: ${env.BRANCH}")
+//         info("OLD_BRANCH ${build.environment["BRANCH"]} ::: ${env.BRANCH}")
 
 //         if (build.environment["BRANCH"] == env.BRANCH) {
-//             log.info("Aborting build: ${build}")
+//             info("Aborting build: ${build}")
 //             build.doStop()
 //         }
 //     }
@@ -151,6 +151,19 @@ def  ECS_IMAGE_TO_DEPLOY = ""
 //                                 --region ${region}
 //     """)
 // }
+def info(message) {
+    echo "\033[1;33m[Info] ${message} \033[0m"
+}
+
+def success(message) {
+    echo "\033[1;32m[Success] ${message} \033[0m"
+}
+
+def error(message) {
+    echo "\033[1;31m[Error] ${message} \033[0m"
+}
+
+
 
 
 pipeline {
@@ -185,7 +198,7 @@ pipeline {
         stage('Clean workspace') {
             steps {
                 script {
-                    log.info("Executing Stage 2: Clean workspace")
+                    info("Executing Stage 2: Clean workspace")
 
                     /* Logic starts here */
 
@@ -193,7 +206,7 @@ pipeline {
 
                     /* Logic ends here */
 
-                    log.success("Completed Stage 2: Clean workspace")
+                    success("Completed Stage 2: Clean workspace")
                 }
             }
         }
@@ -202,8 +215,8 @@ pipeline {
         stage('Code checkout') {
             steps {
                 script {
-                    log.info("Executing Stage 3: Code checkout")
-                    log.info("Getting pull of ${env.BRANCH} from spring-boot repository.")
+                    info("Executing Stage 3: Code checkout")
+                    info("Getting pull of ${env.BRANCH} from spring-boot repository.")
 
                     /* Logic starts here */
 
@@ -212,8 +225,8 @@ pipeline {
 
                     /* Logic ends here */
 
-                    log.info("Fetched latest code from ${env.BRANCH} of spring-boot  repository.")
-                    log.success("Completed Stage 3: Code checkout")
+                    info("Fetched latest code from ${env.BRANCH} of spring-boot  repository.")
+                    success("Completed Stage 3: Code checkout")
                 }
             }
         }
@@ -222,7 +235,7 @@ pipeline {
         stage('Docker build AWS ECR') {
             steps {
                 script {
-                    log.info("Executing Stage 4: Docker build AWS ECR")
+                    info("Executing Stage 4: Docker build AWS ECR")
 
 
                     /* Logic starts here */
@@ -238,8 +251,8 @@ pipeline {
 
                     /* Logic ends here */
 
-                    log.info("Pushed docker image ${tag}")
-                    log.success("Completed Stage 4: Docker build AWS ECR")
+                    info("Pushed docker image ${tag}")
+                    success("Completed Stage 4: Docker build AWS ECR")
                 }
             }
         }
@@ -249,8 +262,8 @@ pipeline {
         //     steps {
         //         script {
 
-        //             log.info("Executing Stage 6: Deploy")
-        //             log.info("Starting deployment for ${env.ENVIRONMENT}")
+        //             info("Executing Stage 6: Deploy")
+        //             info("Starting deployment for ${env.ENVIRONMENT}")
 
         //             ECS_IMAGE_TO_DEPLOY = "${env.ICM_ECR_REPO_URL}/${APPLICATION}:${env.VERSION}-${GIT_COMMIT_ID}"
         //             /* Logic starts here */
@@ -262,8 +275,8 @@ pipeline {
         //             def isServiceExists = awsHelper.isECSServiceExists("${env.CLUSTER_NAME}", service, "${env.ICM_AWS_DEFAULT_REGION}")
 
         //             if (isServiceExists == 0) {
-        //                 log.info("Service already exists, No need to create stack.")
-        //                 log.info("Deploying now...")
+        //                 info("Service already exists, No need to create stack.")
+        //                 info("Deploying now...")
         //                 devDeploy("${env.CLUSTER_NAME}",
         //                         service,
         //                         taskFamily,
@@ -274,7 +287,7 @@ pipeline {
         //                         true)
         //             }
         //             else {
-        //                 log.info("New branch setup: Creating task definition now")
+        //                 info("New branch setup: Creating task definition now")
 
         //                 def isTaskDefCreated = registerTaskDefinition(taskFamily, taskName,
         //                         128, "${ECS_IMAGE_TO_DEPLOY}","${params.SQLCONNSTR_CLIENTAREA}","${params.SQLCONNSTR_DOCUMENTS}", 443, "clientarea-api", "${env.ICM_AWS_DEFAULT_REGION}")
@@ -284,8 +297,8 @@ pipeline {
         //                     error("Error while creating TaskDefinition.")
         //                 }
 
-        //                 log.success("TaskDefinition created successfully.")
-        //                 log.info("Creating service now.")
+        //                 success("TaskDefinition created successfully.")
+        //                 info("Creating service now.")
 
         //                 def tgArn = createTargetGroup("${env.TARGET_GROUP}", "${env.VPC}", 443,
         //                                     "/health", 15, 2, 2, 200, "${env.ICM_AWS_DEFAULT_REGION}")
@@ -295,8 +308,8 @@ pipeline {
         //                     error("Error while creating TargetGroup.")
         //                 }
 
-        //                 log.success("TargetGroup created successfully.")
-        //                 log.info("Modifying TG attributes")
+        //                 success("TargetGroup created successfully.")
+        //                 info("Modifying TG attributes")
 
         //                 def isModifiedTgAttr = awsHelper.modifyTargetGroupAttr("${tgArn}", 30, "${env.ICM_AWS_DEFAULT_REGION}")
 
@@ -305,8 +318,8 @@ pipeline {
         //                     error("Error while modifying TargetGroup attributes.")
         //                 }
 
-        //                 log.success("TargetGroup attributes modified successfully.")
-        //                 log.info("Creating LB listener now.")
+        //                 success("TargetGroup attributes modified successfully.")
+        //                 info("Creating LB listener now.")
 
         //                 def priority = awsHelper.getNextALBRulePriority("${env.DEV_ALB_HTTP_LISTENER_ARN}", "${env.ICM_AWS_DEFAULT_REGION}")
 
@@ -327,8 +340,8 @@ pipeline {
         //                     error("Error while creating LB HTTPS listener.")
         //                 }
 
-        //                 log.success("LB listener created successfully.")
-        //                 log.info("Creating service now.")
+        //                 success("LB listener created successfully.")
+        //                 info("Creating service now.")
 
         //                 def isServiceCreated = awsHelper.createECSService(service, "${env.CLUSTER_NAME}", taskFamily,
         //                         1, "${tgArn}", taskName, 443, "${env.ICM_AWS_DEFAULT_REGION}")
@@ -338,12 +351,12 @@ pipeline {
         //                     error("Error while creating service. Marking the status of build FAILED.")
         //                 }
                                         
-        //                 log.success("Service created successfully. Waiting for service to be stable.")
+        //                 success("Service created successfully. Waiting for service to be stable.")
         //                 //ecs.wait("${env.CLUSTER_NAME}", service, "${env.ICM_AWS_DEFAULT_REGION}")
-        //                 log.success("Deployment done.")
+        //                 success("Deployment done.")
         //             }
-        //             log.success("Deployment completed for Dev")
-        //             log.success("Completed Stage 6: Deploy")
+        //             success("Deployment completed for Dev")
+        //             success("Completed Stage 6: Deploy")
         //         }
         //     }
         // }
@@ -354,27 +367,27 @@ pipeline {
     post {
         aborted {
             script {
-                log.info("###############################")
-                log.info('Build process is aborted')
+                info("###############################")
+                info('Build process is aborted')
              //   helper.notifySlack("warning", "Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} was aborted.")
-                log.info("###############################")
+                info("###############################")
             }
         }
         failure {
             script {
-                log.error("#############################")
-                log.error('Build process failed.')
+                error("#############################")
+                error('Build process failed.')
               //  helper.notifySlack("danger", "Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} was failed.")
-                log.error("#############################")
+                error("#############################")
             }
         }
         success {
             script {
-                log.success("*************************************************")
-                log.success("Endpoint: \n ${env.COM_SITE_HOST}")
+                success("*************************************************")
+                success("Endpoint: \n ${env.COM_SITE_HOST}")
                 //helper.notifySlack("good", "Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} was successful.\n URL:\n ${env.COM_SITE_HOST}")
-                log.success("*************************************************")
-                log.success('Build process completed successfully.')
+                success("*************************************************")
+                success('Build process completed successfully.')
             }
         }
     }
