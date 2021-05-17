@@ -1,0 +1,55 @@
+---
+# Spring Deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-deploy
+  namespace: production
+  labels:
+    app: spring
+    env: prod
+spec:
+  selector:
+    matchLabels:
+      app: spring
+      env: prod
+  replicas: 4
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
+  revisionHistoryLimit: 10
+  minReadySeconds: 10
+  template:
+    metadata:
+      namespace: production
+      labels:
+        app: spring
+        env: prod
+    spec:
+      containers:
+      - name: spring-actuator
+        image: "365151504774.dkr.ecr.us-east-1.amazonaws.com/spring-app:master-2021-05-17-100406-11"
+        ports:
+          - containerPort: 9090
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 9090
+          initialDelaySeconds: 5 
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 9090
+          initialDelaySeconds: 5 
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+
+
+
