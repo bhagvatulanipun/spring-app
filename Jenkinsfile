@@ -173,7 +173,7 @@ pipeline {
     // Pipeline options
     options {
         timeout(time: 1, unit: 'HOURS')
-
+        ansiColor('xterm')
     }
 
     // Environment specific parameters to be used throughout the pipeline
@@ -244,7 +244,7 @@ pipeline {
 
                     // Build and push docker image
                     IMAGENAME = "${env.ECR_URL}/${env.APPLICATION}"
-                    docker.withRegistry("https://${env.ICM_ECR_REPO_URL}") {
+                    docker.withRegistry("https://${env.ICM_ECR_REPO_URL}", "${env.ECR_LOGIN}") {
                         image = docker.build("${IMAGENAME}", " .")
                         docker.image("${IMAGENAME}").push("${tag}")
                     }
