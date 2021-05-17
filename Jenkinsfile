@@ -126,23 +126,27 @@ pipeline {
                                 error("Deployment startup fialed: Image can not be updated")
                                 currentBuild.result = 'FAILED'
                             }
+
                             else {
+
                                 success("Deployment to EKS Started")
                                 waiterCommand = "kubectl -n production rollout status deployment spring-deploy"
                                 def isWaiter = sh (
-                                      script : waiterCommand
+                                      script : waiterCommand,
                                       returnStatus: true
                                 )
+
                                 if(isWaiter !=0) {
                                    error("Deployment fialed")
                                    error("Starting rollback")
                                    rollBack = "kubectl -n production rollout undo deployment spring-deploy"
                                    def isRolback = sh (
-                                       script : rollBack
+                                       script : rollBack,
                                        returnStatus: true
                                    )
                                    currentBuild.result = 'FAILED'
                                 }
+
                                 else {
                                     success("Deployment to EKS Complete")
                                 }
