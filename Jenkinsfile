@@ -51,7 +51,7 @@ pipeline {
         stage('Clean workspace') {
             steps {
                 script {
-                    info("Executing Stage 2: Clean workspace")
+                    info("Executing Stage 1: Clean workspace")
 
                     /* Logic starts here */
 
@@ -59,7 +59,7 @@ pipeline {
 
                     /* Logic ends here */
 
-                    success("Completed Stage 2: Clean workspace")
+                    success("Completed Stage 1: Clean workspace")
                 }
             }
         }
@@ -68,7 +68,7 @@ pipeline {
         stage('Code checkout') {
             steps {
                 script {
-                    info("Executing Stage 3: Code checkout")
+                    info("Executing Stage 2: Code checkout")
                     info("Getting pull of ${env.BRANCH} from spring-boot repository.")
 
                     /* Logic starts here */
@@ -79,7 +79,7 @@ pipeline {
                     /* Logic ends here */
 
                     info("Fetched latest code from ${env.BRANCH} of spring-boot repository.")
-                    success("Completed Stage 3: Code checkout")
+                    success("Completed Stage 2: Code checkout")
                 }
             }
         }
@@ -88,7 +88,7 @@ pipeline {
         stage('Docker build AWS ECR') {
             steps {
                 script {
-                    info("Executing Stage 4: Docker build AWS ECR")
+                    info("Executing Stage 3: Docker build AWS ECR")
 
 
                     /* Logic starts here */
@@ -105,7 +105,7 @@ pipeline {
                     /* Logic ends here */
 
                     info("Pushed docker image ${tag}")
-                    success("Completed Stage 4: Docker build AWS ECR")
+                    success("Completed Stage 3: Docker build AWS ECR")
                 }
             }
         }
@@ -114,7 +114,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    info("Starting deployment")
+                    info("Executing Stage 4: Starting deployment")
 
                             /* logic start */
                             IMAGE = "${env.ECR_URL}/${env.APPLICATION}:${env.VERSION}"
@@ -153,7 +153,7 @@ pipeline {
                                 }
 
                                 else {
-                                    success("Deployment to EKS Complete")
+                                    success("Completed Stage 4: Deployment to EKS Complete")
                                 }
 
                             }
