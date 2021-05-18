@@ -15,8 +15,13 @@ def error(message) {
     echo "\033[1;31m[Error] ${message} \033[0m"
 }
 
-
-
+def triggerNotification(message) {
+    return sh(returnStatus: true, script: """
+                                    aws sns publish \
+                                    --topic-arn "arn:aws:sns:us-west-2:123456789012:my-topic" \
+                                    --message ${message}
+                            """)
+}
 
 pipeline {
     agent any
@@ -166,6 +171,7 @@ pipeline {
             script {
                 info("###############################")
                 info('Build process is aborted')
+                triggerNotification("Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} was aborted.")
                 info("###############################")
             }
         }
@@ -173,14 +179,17 @@ pipeline {
             script {
                 error("#############################")
                 error('Build process failed.')
+                triggerNotification("Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} Failed.")
                 error("#############################")
             }
         }
         success {
             script {
-                success("*************************************************")
-                success("*************************************************")
+                success("#############################")
                 success('Build process completed successfully.')
+                triggerNotification("Job: ${env.JOB_NAME} with buildnumber ${env.BUILD_NUMBER} was Successfull.")
+                success("#############################")
+  
             }
         }
     }
