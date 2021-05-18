@@ -18,8 +18,8 @@ def error(message) {
 def triggerNotification(message) {
     return sh(returnStatus: true, script: """
                                     aws sns publish \
-                                    --topic-arn "arn:aws:sns:us-west-2:123456789012:my-topic" \
-                                    --message ${message}
+                                    --topic-arn "arn:aws:sns:us-east-1:365151504774:jenkins-build-status" \
+                                    --message "${message}"
                             """)
 }
 
